@@ -24,9 +24,12 @@ def category_detail_api_view(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     elif request.method == 'PUT':
-        category.name = request.data.get('name')
+        serializer = CategoryValidateSerializer(instance=category, data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+        category.name = serializer.validated_data.get('name')
         category.save()
-        return Response(status=status.HTTP_201_CREATED,
+        return Response(status=status.HTTP_200_OK,
                         data=CategoryDetailSerializer(category).data)
 
     
@@ -72,12 +75,15 @@ def  product_detail_api_view(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     elif request.method == 'PUT':
-        product.title = request.data.get('title')
-        product.description = request.data.get('description')
-        product.price = request.data.get('price')
-        product.category_id = request.data.get('category_id')
+        serializer = ProductValidateSerializer(instance=product,data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+        product.title = serializer.validated_data.get('title')
+        product.description = serializer.validated_data.get('description')
+        product.price = serializer.validated_data.get('price')
+        product.category_id = serializer.validated_data.get('category_id')
         product.save()
-        return Response(status=status.HTTP_201_CREATED,
+        return Response(status=status.HTTP_200_OK,
                         data=ProductDetailSerializer(product).data)
 
 
@@ -127,11 +133,14 @@ def review_detail_api_view(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     elif request.method == 'PUT':
-        review.text = request.data.get('text')
-        review.product_id = request.data.get('product_id')
-        review.stars = request.data.get('stars')
+        serializer = ReviewValidateSerializer(instance=review, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+        review.text = serializer.validated_data.get('text')
+        review.product_id = serializer.validated_data.get('product_id')
+        review.stars = serializer.validated_data.get('stars')
         review.save()
-        return Response(status=status.HTTP_201_CREATED,
+        return Response(status=status.HTTP_200_OK,
                         data=ReviewDetailSerializer(review).data)
 
 
